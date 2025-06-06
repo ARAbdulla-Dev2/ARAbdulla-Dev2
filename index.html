@@ -36,6 +36,7 @@
             padding: 0;
             box-sizing: border-box;
             text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         :root {
@@ -53,8 +54,16 @@
             --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
 
+        .dark {
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+        }
+
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root:not(.light) {
                 --text-primary: #f9fafb;
                 --text-secondary: #d1d5db;
                 --bg-primary: #111827;
@@ -526,14 +535,44 @@
             transition: transform 0.3s ease;
             padding: 0.5rem;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
         }
 
         .theme-toggle:hover {
             transform: rotate(30deg);
+            background: rgba(0, 0, 0, 0.05);
         }
 
-        .dark .theme-toggle {
-            color: var(--text-primary);
+        .dark .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            z-index: 100;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
         }
 
         /* Responsive Design */
@@ -932,88 +971,88 @@
             });
         });
 
-// Dark mode toggle functionality
-const darkModeToggle = document.querySelector('.dark-mode-toggle');
-const themeToggle = document.querySelector('.theme-toggle');
+        // Dark mode toggle functionality
+        const darkModeToggle = document.querySelector('.dark-mode-toggle');
+        const themeToggle = document.querySelector('.theme-toggle');
 
-function toggleDarkMode() {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    localStorage.setItem('darkMode', isDark);
-    
-    // Update toggle icons
-    const moonIcon = '<i class="fas fa-moon"></i>';
-    const sunIcon = '<i class="fas fa-sun"></i>';
-    
-    // Update both toggle buttons if they exist
-    if (darkModeToggle) {
-        darkModeToggle.innerHTML = isDark ? sunIcon : moonIcon;
-    }
-    if (themeToggle) {
-        themeToggle.innerHTML = isDark ? sunIcon : moonIcon;
-    }
-    
-    // Update header background when toggling dark mode
-    const header = document.querySelector('.header');
-    if (header) {
-        if (isDark) {
-            header.style.background = window.scrollY > 100 ? 'rgba(17, 24, 39, 0.98)' : 'rgba(17, 24, 39, 0.95)';
-        } else {
-            header.style.background = window.scrollY > 100 ? 'rgba(255, 255, 255, 0.98)' : 'rgba(255, 255, 255, 0.95)';
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            
+            // Update toggle icons
+            const moonIcon = '<i class="fas fa-moon"></i>';
+            const sunIcon = '<i class="fas fa-sun"></i>';
+            
+            // Update both toggle buttons if they exist
+            if (darkModeToggle) {
+                darkModeToggle.innerHTML = isDark ? sunIcon : moonIcon;
+            }
+            if (themeToggle) {
+                themeToggle.innerHTML = isDark ? sunIcon : moonIcon;
+            }
+            
+            // Update header background when toggling dark mode
+            const header = document.querySelector('.header');
+            if (header) {
+                if (isDark) {
+                    header.style.background = window.scrollY > 100 ? 'rgba(17, 24, 39, 0.98)' : 'rgba(17, 24, 39, 0.95)';
+                } else {
+                    header.style.background = window.scrollY > 100 ? 'rgba(255, 255, 255, 0.98)' : 'rgba(255, 255, 255, 0.95)';
+                }
+            }
         }
-    }
-}
 
-// Check for saved user preference or system preference
-function checkDarkModePreference() {
-    const savedPreference = localStorage.getItem('darkMode');
-    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // Use saved preference if exists, otherwise use system preference
-    if (savedPreference !== null) {
-        if (savedPreference === 'true') {
-            document.body.classList.add('dark');
+        // Check for saved user preference or system preference
+        function checkDarkModePreference() {
+            const savedPreference = localStorage.getItem('darkMode');
+            const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Use saved preference if exists, otherwise use system preference
+            if (savedPreference !== null) {
+                if (savedPreference === 'true') {
+                    document.body.classList.add('dark');
+                }
+            } else if (systemPreference) {
+                document.body.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
+            
+            // Set initial icons based on current mode
+            const isDark = document.body.classList.contains('dark');
+            const moonIcon = '<i class="fas fa-moon"></i>';
+            const sunIcon = '<i class="fas fa-sun"></i>';
+            
+            if (darkModeToggle) {
+                darkModeToggle.innerHTML = isDark ? sunIcon : moonIcon;
+            }
+            if (themeToggle) {
+                themeToggle.innerHTML = isDark ? sunIcon : moonIcon;
+            }
         }
-    } else if (systemPreference) {
-        document.body.classList.add('dark');
-        localStorage.setItem('darkMode', 'true');
-    }
-    
-    // Set initial icons based on current mode
-    const isDark = document.body.classList.contains('dark');
-    const moonIcon = '<i class="fas fa-moon"></i>';
-    const sunIcon = '<i class="fas fa-sun"></i>';
-    
-    if (darkModeToggle) {
-        darkModeToggle.innerHTML = isDark ? sunIcon : moonIcon;
-    }
-    if (themeToggle) {
-        themeToggle.innerHTML = isDark ? sunIcon : moonIcon;
-    }
-}
 
-// Initialize dark mode on page load
-document.addEventListener('DOMContentLoaded', checkDarkModePreference);
+        // Initialize dark mode on page load
+        document.addEventListener('DOMContentLoaded', checkDarkModePreference);
 
-// Add event listeners for dark mode toggles
-if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', toggleDarkMode);
-}
-if (themeToggle) {
-    themeToggle.addEventListener('click', toggleDarkMode);
-}
-
-// Listen for system color scheme changes
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    // Only update if user hasn't set a preference
-    if (localStorage.getItem('darkMode') === null) {
-        if (e.matches) {
-            document.body.classList.add('dark');
-        } else {
-            document.body.classList.remove('dark');
+        // Add event listeners for dark mode toggles
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', toggleDarkMode);
         }
-    }
-});
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleDarkMode);
+        }
+
+        // Listen for system color scheme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            // Only update if user hasn't set a preference
+            if (localStorage.getItem('darkMode') === null) {
+                if (e.matches) {
+                    document.body.classList.add('dark');
+                } else {
+                    document.body.classList.remove('dark');
+                }
+            }
+        });
     </script>
 </body>
 </html>
